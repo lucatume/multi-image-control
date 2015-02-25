@@ -1,0 +1,64 @@
+/**
+ * theAverageDeve libraries
+ * https://github.com/lucatume/tad-libs-for-wordpress
+ *
+ * Copyright (c) 2014 theAverageDev (Luca Tumedei)
+ * Licensed under the GPLv2+ license.
+ */
+.customize-control-multi-image .thumbnails .thumbnail {
+  width: 100%;
+  height: 90px;
+  margin: 2px;
+  /*border-radius*/
+  border-radius: 3px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: center;
+  background-repeat: no-repeat;
+  /*background-size*/
+  -webkit-background-size: cover;
+  background-size: cover;
+  outline: none;
+  margin: 5px 1px 3px 0px;
+  border: 1px solid #DDDDDD; }
+  .customize-control-multi-image .thumbnails .thumbnail.no-list {
+    list-style-type: none; }
+  .customize-control-multi-image .thumbnails .thumbnail.selected {
+    border: 3px solid #3498db; }
+  .customize-control-multi-image .thumbnails .thumbnail .removeIcon {
+    cursor: pointer;
+    position: relative;
+    left: -7.6%;
+    border-radius: 50px;
+    background: #e74c3c;
+    border: 3px solid #3498db;
+    text-align: center;
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%); }
+    .customize-control-multi-image .thumbnails .thumbnail .removeIcon a {
+      position: relative;
+      top: 60%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+      -webkit-transform: translateY(-50%);
+      height: 100%;
+      display: inline-block;
+      font-size: 30px;
+      color: #FFF; }
+  .customize-control-multi-image .thumbnails .thumbnail:focus, .customize-control-multi-image .thumbnails .thumbnail:hover {
+    -webkit-box-shadow: 0 0 5px #3498db;
+    box-shadow: 0 0 5px #3498db;
+    margin: 5px 1px 3px 0px;
+    border: 1px solid #3498db; }
+.customize-control-multi-image .customize-control-content {
+  margin-top: 1em; }
+.customize-control-multi-image .multi-images-remove {
+  float: right; }
+
+/*# sourceMappingURL=multi-image.css.map */
