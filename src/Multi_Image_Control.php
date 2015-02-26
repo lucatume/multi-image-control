@@ -29,7 +29,7 @@
 
 		protected function the_title() {
 			$label = $this->label;
-			include $this->get_template( 'title' );
+			include $this->get_template( 'titles' );
 		}
 
 		protected function get_images() {
@@ -43,7 +43,7 @@
 
 		public function the_buttons() {
 			$value = $this->value();
-			$link = $this->link();
+			$link = $this->get_link();
 			include $this->get_template( 'buttons' );
 		}
 
@@ -52,6 +52,6 @@
 		}
 
 		private function get_template( $template ) {
-			include dirname( dirname( __FILE__ ) ) . '/templates/' . $template . '.tmpl';
+			return dirname( dirname( __FILE__ ) ) . '/templates/' . $template . '.php';
 		}
 	}
