@@ -12,17 +12,19 @@
 	include dirname( __FILE__ ) . '/autoload.php';
 
 	$register = new tad_Multi_Image_Control_Register();
+
 	// register the plugin textdomain
 	add_action( 'plugins_loaded', array( $register, 'register_textdomain' ) );
 	// register the plugin scripts
 	add_action( 'admin_enqueue_scripts', array( $register, 'register_scripts_and_styles' ) );
-
+	// register the control type
+	add_action('customize_register', array($register, 'register_control_type'));
 
 	// test
 	add_action( 'customize_register', 'test_cust' );
-	function test_cust( $wp_customize ) {
-		$wp_customize->add_setting( 'the_images', array(
-			'default' => '#000000',
+	function test_cust( WP_Customize_Manager $wp_customize ) {
+		$wp_customize->add_setting( 'custom_control_setting', array(
+			'default' => '',
 			'transport' => 'refresh',
 		) );
 		$wp_customize->add_section( 'control-test', array(
@@ -32,6 +34,6 @@
 		$wp_customize->add_control( new tad_Multi_Image_Control( $wp_customize, 'test_cust_control', array(
 			'label' => __( 'Choose images!', 'default' ),
 			'section' => 'control-test',
-			'settings' => 'the_images'
+			'settings' => 'custom_control_setting'
 		) ) );
 	}

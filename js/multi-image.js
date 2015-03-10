@@ -1,212 +1,169 @@
-/*! theAverageDeve libraries - v0.1.0
- * https://github.com/lucatume/tad-libs-for-wordpress
- * Copyright (c) 2014; * Licensed GPLv2+ */
-function RemoveAction(parent) {
-    this.parent = parent;
-    this.removeButton = jQuery('<span></span>');
-    this.removeButton.attr('class', 'removeIcon');
-    this.removeButton.append(jQuery('<a>x</a>'));
+(function ( $, window, _, undefined ) {
+	"use strict";
 
-    this.removeButton.on('click', function(event) {
-        event.preventDefault();
-        var item = jQuery(this).parent(),
-            root = item.closest('.customize-control-multi-image'),
-            input = root.find('input.multi-images-control-input'),
-            urls = [];
-        item.remove();
-        jQuery(root).find('.thumbnail').each(function(index, el) {
-            urls.push(jQuery(this).data('src'));
-        });
-        input.val(urls.reverse()).trigger('change');
-        input.trigger('updateThumbnails', {
-            urls: urls
-        });
-    });
+	// create the Backbone Events object
+	var MultiImageEvents = {};
 
-    this.parent.append(this.removeButton);
-}
+	_.extend( MultiImageEvents, Backbone.Events );
 
-function MultiImageControl(root) {
-    /**
-     * The jQuery object that references a single multi imagec control
-     *
-     * @type {jQuery object}
-     */
-    this.root = root;
-    /**
-     * The hidden input that will store the images urls, that's linked to
-     * the Backbone
-     *
-     * @type {jQuery object}
-     */
-    this.store = root.find('input.multi-images-control-input');
-    this.uploadButtton = root.find('.multi-images-upload');
-    this.removeButton = root.find('.multi-images-remove');
-    this.thumbnails = root.find('ul.thumbnails');
+	var ImageFileFrame = {
+		open: function () {
+			var file_frame = wp.media.frames.file_frame;
 
-    this.start = function() {
-        // clicking the upload button will open the media frame
-        // and update the input field value
-        this.uploadButtton.on('click', function(evt) {
-            var file_frame, store = jQuery(this).closest('.customize-control-multi-image').find('input.multi-images-control-input');
+			// file frame already created, return
+			if ( file_frame ) {
+				file_frame.open();
+				return;
+			}
 
-            evt.preventDefault();
+			// create the file frame
+			file_frame = wp.media.frames.file_frame = wp.media( {
+				//title: $( this ).data( 'uploader_title' ),
+				//button: $( this ).data( 'uploader_button_text' ),
+				multiple: true,
+				library: {
+					type: 'image'
+				}
+			} );
 
-            // file frame already created, return
-            if (file_frame) {
-                file_frame.open();
-                return;
-            }
+			// get the selected attachments when user selects
+			file_frame.on( 'select', function ( evt ) {
+				var selected = file_frame.state().get( 'selection' ).toJSON(),
+					urls = [];
+				_.each( selected, function ( attachment ) {
+					urls.push( attachment.url );
+				} );
+				MultiImageEvents.trigger( 'multi-image-control:urls-available', urls );
+			} );
 
-            // create the file frame
-            file_frame = wp.media.frames.file_frame = wp.media({
-                title: jQuery(this).data('uploader_title'),
-                button: jQuery(this).data('uploader_button_text'),
-                multiple: true,
-                library: {
-                    type: 'image'
-                }
-            });
+			// open the file frame
+			file_frame.open();
+		}
+	};
 
-            // get the selected attachments when user selects
-            file_frame.on('select', function(evt) {
-                var selected = file_frame.state().get('selection').toJSON(),
-                    urls = [];
-                for (var i = selected.length - 1; i >= 0; i--) {
-                    urls.push(selected[i].url);
-                }
-                store.val(urls).trigger('change');
-                store.trigger('updateThumbnails', {
-                    urls: urls
-                });
-            });
-            // open the file frame
-            file_frame.open();
-        });
+	function MultiImageControl( $control, data ) {
 
-        // remove all images when the remove images button is pressed
-        this.removeButton.on('click', function(evt) {
-            var root, thumbnails, store, selected, urls = [];
+		this.$store = $control.find( data.selectors.store );
+		this.$upload_buttton = $control.find( data.selectors.upload_button );
+		this.$remove_button = $control.find( data.selectors.remove_button );
+		this.$thumbnails = $control.find( data.selectors.thumbnails );
 
-            root = jQuery(this).closest('.customize-control-multi-image');
-            thumbnails = root.find('.thumbnails');
-            store = root.find('input.multi-images-control-input');
+		this.update_urls = function ( urls ) {
+			this.$store.val( urls );
+			wp.customize.trigger( 'change' );
+		};
 
-            evt.preventDefault();
+		this.get_thumbnail_for = function ( url ) {
+			var th = $( '<li/>' );
+			th.attr( 'style', 'background-image:url(' + url + ');' );
+			th.attr( 'class', 'thumbnail' );
+			th.attr( 'data-src', url );
 
-            selected = thumbnails.find('.thumbnail.selected');
+			return th;
+		};
 
-            if (selected.length === 0) {
-                urls = '';
-            } else {
-                thumbnails.find('.thumbnail:not(.selected)').each(function() {
-                    urls.push(jQuery(this).data('src'));
-                });
-            }
-            store.val(urls).trigger('change');
-            store.trigger('updateThumbnails', {
-                urls: urls
-            });
-        });
+		this.update_thumbnails = function ( urls ) {
+			var self = this;
+			self.$thumbnails.empty();
+			_.each( urls, function ( url ) {
+				self.$thumbnails.append( self.get_thumbnail_for( url ) );
+			} );
+		};
 
-        this.removeButton.on('updateLabelAndVisibility', function(evt) {
-            var button, thumbnails, thumbs, selected, count;
-            button = jQuery(this);
-            thumbnails = button.closest('.customize-control-multi-image').find('.thumbnails');
-            thumbs = thumbnails.find('.thumbnail');
-            if (thumbs.length === 0) {
-                button.hide();
-                return;
-            }
-            button.show();
-            selected = thumbnails.find('.thumbnail.selected');
-            count = selected.length;
-            if (count === 0) {
-                button.text('Remove all images');
-            } else if (count === 1) {
-                button.text('Remove the image');
-            } else if (count >= 2) {
-                button.text('Remove ' + count + ' images');
-            }
-        });
+		this.clear_urls = function () {
+			this.$store.val( '' );
+			this.update_thumbnails( [] );
+		};
 
-        // update the images when the input value changes
-        this.store.on('updateThumbnails', function(evt, args) {
-            var root, thumbnails, urls = args.urls;
-            root = jQuery(this).closest('.customize-control-multi-image');
-            thumbnails = root.find('.thumbnails');
-            // remove old images
-            thumbnails.empty();
-            // for each image url in the value create and append an image element to the list
-            for (var i = urls.length - 1; i >= 0; i--) {
-                var li = jQuery('<li/>');
-                li.attr('style', 'background-image:url(' + urls[i] + ');');
-                li.attr('class', 'thumbnail');
-                li.attr('data-src', urls[i]);
-                thumbnails.append(li);
-            }
-            // update or hide the remove images button
-            root.find('.multi-images-remove').trigger('updateLabelAndVisibility');
-        });
+		this.clear_thumbnails = function () {
+			this.$thumbnails.empty();
+		};
 
-        // make the images sortable
-        this.thumbnails.sortable({
-            items: '> li',
-            axis: 'y',
-            opacity: 0.6,
-            distance: 3,
-            cursor: 'move',
-            delay: 150,
-            tolerance: 'pointer',
-            update: function(evt, ui) {
-                var t = jQuery(this),
-                    urls = [],
-                    input;
-                jQuery(t.find('li')).each(function() {
-                    var li = jQuery(this);
-                    urls.push(li.data('src'));
-                    li.removeClass('no-list');
-                });
-                input = t.closest('.customize-control-multi-image').find('input.multi-images-control-input');
-                input.val(urls).trigger('change');
-                t.sortable('refreshPositions');
-            },
-            start: function(evt, ui) {
-                var thumbnails = jQuery(this);
-                thumbnails.find('li').each(function() {
-                    jQuery(this).addClass('no-list');
-                    jQuery(this).removeClass('selected');
-                });
-                // trigger the remove button label refresh
-                thumbnails.closest('.customize-control-multi-image').find('.multi-images-remove').trigger('updateLabelAndVisibility');
-            }
-        }).disableSelection();
+		this.get_stored_urls = function () {
+			return this.$store.val();
+		}
 
-        // make the list items clickable
-        jQuery('.customize-control-multi-image .thumbnails').on('click', '.thumbnail', function() {
-            var li = jQuery(this),
-                removeButton = li.closest('.customize-control-multi-image').find('.multi-images-remove').first();
-            // toggle the selected class
-            li.toggleClass('selected');
-            // append or remove the icons from the item
-            if (li.hasClass('selected')) {
-                new RemoveAction(li);
-            } else {
-                li.empty();
-            }
-            // trigger the update of the remove button
-            removeButton.trigger('updateLabelAndVisibility');
-        });
+		this.init = function () {
+			var self = this;
 
-        // bootstrap the remove button label and visibility
-        this.removeButton.trigger('updateLabelAndVisibility');
-    };
-}
+			this.$upload_buttton.on( 'click', function ( evt ) {
+				ImageFileFrame.open();
+			} );
 
-jQuery(document).ready(function($) {
-    "use strict";
-    // bootstrap all the multi image controls
-    $(".customize-control-multi-image").each(function() {
-        new MultiImageControl($(this)).start();
-    });
-});
+			MultiImageEvents.on( 'multi-image-control:urls-available', function ( urls ) {
+				self.update_urls( urls );
+				self.update_thumbnails( urls );
+			} );
+
+			this.$remove_button.on( 'click', function () {
+				self.clear_urls();
+				self.clear_thumbnails();
+			} );
+
+			// make the images sortable
+			this.$thumbnails.sortable( {
+				items: '> li',
+				axis: 'y',
+				opacity: 0.6,
+				distance: 3,
+				cursor: 'move',
+				delay: 150,
+				tolerance: 'pointer',
+				update: function () {
+					var thumbnails = $( this ).find( data.selectors.thumbnail ),
+						urls = [];
+					_.each( thumbnails, function ( thumbnail ) {
+						var $thumbnail = $( thumbnail );
+						urls.push( $thumbnail.data( 'src' ) );
+						$thumbnail.removeClass( 'no-list' );
+					} );
+					MultiImageEvents.trigger( 'multi-image-control:urls-available', urls );
+				},
+				start: function () {
+					var thumbnails = $( this ).find( data.selectors.thumbnail );
+					_.each( thumbnails, function ( th ) {
+						$( th ).addClass( 'no-list' ).removeClass( 'selected' );
+					} );
+				}
+			} ).disableSelection();
+
+			// make the list items clickable
+			this.$thumbnails.on( 'click', function () {
+				var $li = $( this );
+				$li.toggleClass( 'selected' );
+				// append or remove the icons from the item
+				if ( $li.hasClass( 'selected' ) ) {
+					new RemoveAction( $li );
+				} else {
+					$li.empty();
+				}
+			} );
+
+			// first thumbnails render
+			MultiImageEvents.trigger( 'multi-image-control:urls-available', this.get_stored_urls() );
+		};
+	}
+
+	$( document ).ready( function () {
+
+		var data = {};
+
+		data.selectors = {};
+		data.selectors.store = 'input[type="hidden"][name="store"]';
+		data.selectors.upload_button = '.upload';
+		data.selectors.remove_button = '.remove';
+		data.selectors.thumbnails = 'ul.thumbnails';
+		data.selectors.thumbnail = 'li.thumbnail';
+
+		// bootstrap all the multi image controls
+		var events = wp.customize.Events;
+		events.bind( 'multi-image-control:rendered', function () {
+			$( '.customize-control-multi-image' ).each( function ( i, control ) {
+				setTimeout( function () {
+					var $control = $( control );
+					new MultiImageControl( $control, data ).init();
+				}, 25 );
+			} );
+		} );
+	} )
+})( jQuery, window, window._ );

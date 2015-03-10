@@ -43,7 +43,7 @@
     -webkit-transform: translateY(-50%); }
     .customize-control-multi-image .thumbnails .thumbnail .removeIcon a {
       position: relative;
-      top: 60%;
+      top: 70%;
       -ms-transform: translateY(-50%);
       transform: translateY(-50%);
       -webkit-transform: translateY(-50%);
@@ -60,5 +60,3 @@
   margin-top: 1em; }
 .customize-control-multi-image .multi-images-remove {
   float: right; }
-
-/*# sourceMappingURL=multi-image.css.map */
