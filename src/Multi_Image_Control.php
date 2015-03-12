@@ -2,8 +2,8 @@
 
 class tad_Multi_Image_Control extends WP_Customize_Control
 {
-    
-    public $type = 'multi-image';
+
+    public $type = 'multi_image';
     
     public function __construct($manager, $id, $args = array())
     {
@@ -13,9 +13,9 @@ class tad_Multi_Image_Control extends WP_Customize_Control
     
     public function enqueue()
     {
-        wp_enqueue_script('tad-multi-image-control');
-        wp_enqueue_style('tad-multi-image-control');
-        wp_localize_script('tad-multi-image-control', '_tadMultiImageControl', array(
+	    wp_enqueue_script('multi-image-control-js');
+        wp_enqueue_style('multi-image-control-css');
+        wp_localize_script('multi-image-control-js', '_MultiImageControl', array(
             'remove_all_images_label' => __('Remove all images', 'mic') ,
             'remove_one_image_label' => __('Remove the image', 'mic') ,
             'remove_n_images_label' => __('Remove the images', 'mic')
