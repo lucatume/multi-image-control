@@ -8,7 +8,6 @@ class tad_Multi_Image_Control extends WP_Customize_Control
     public function __construct($manager, $id, $args = array())
     {
         parent::__construct($manager, $id, $args);
-        $this->enqueue();
     }
     
     public function enqueue()
@@ -31,6 +30,17 @@ class tad_Multi_Image_Control extends WP_Customize_Control
         $this->json['l10n']['upload_button_label'] = __('Upload', 'mic');
         $this->json['l10n']['remove_all_button_label'] = __('Remove all', 'mic');
     }
+
+	protected function get_srcs() {
+		$imageSrcs = explode( ',', $this->value() );
+		if ( ! is_array( $imageSrcs ) ) {
+			$imageSrcs = array();
+
+			return $imageSrcs;
+		}
+
+		return $imageSrcs;
+	}
     
     public function render_content()
     {
@@ -40,17 +50,5 @@ class tad_Multi_Image_Control extends WP_Customize_Control
     protected function content_template()
     {
         echo file_get_contents(dirname(__FILE__) . '/templates/multi-image-control.tmpl');
-    }
-    
-    protected function get_srcs()
-    {
-        $imageSrcs = explode(',', $this->value());
-        if (!is_array($imageSrcs)) {
-            $imageSrcs = array();
-            
-            return $imageSrcs;
-        }
-        
-        return $imageSrcs;
     }
 }
