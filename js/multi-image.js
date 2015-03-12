@@ -143,9 +143,8 @@
 			// first thumbnails render
 			MultiImageEvents.trigger( 'multi-image-control:urls-available', this.get_stored_urls() );
 		};
-	}
+	};
 
-	// see Multi_Image_Control::$type property
 	api.MultiImage = api.Control.extend({
 		ready: function(){
 			console.log('Hello World!');
