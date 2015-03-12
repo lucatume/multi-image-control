@@ -2,7 +2,7 @@
 	"use strict";
 
 	// create the Backbone Events object
-	var MultiImageEvents = {};
+	var MultiImageEvents = {}, api = wp.customize;
 
 	_.extend( MultiImageEvents, Backbone.Events );
 
@@ -41,7 +41,8 @@
 		}
 	};
 
-	function MultiImageControl( $control, data ) {
+
+	var MultiImageControl = function( $control, data ) {
 
 		this.$store = $control.find( data.selectors.store );
 		this.$upload_buttton = $control.find( data.selectors.upload_button );
@@ -144,26 +145,35 @@
 		};
 	}
 
+	// see Multi_Image_Control::$type property
+	api.MultiImage = api.Control.extend({
+		ready: function(){
+			console.log('Hello World!');
+		}
+	});
+
+	$.extend( api.controlConstructor, {multi_image: api.MultiImage} );
+
 	$( document ).ready( function () {
 
-		var data = {};
-
-		data.selectors = {};
-		data.selectors.store = 'input[type="hidden"][name="store"]';
-		data.selectors.upload_button = '.upload';
-		data.selectors.remove_button = '.remove';
-		data.selectors.thumbnails = 'ul.thumbnails';
-		data.selectors.thumbnail = 'li.thumbnail';
-
-		// bootstrap all the multi image controls
-		var events = wp.customize.Events;
-		events.bind( 'multi-image-control:rendered', function () {
-			$( '.customize-control-multi-image' ).each( function ( i, control ) {
-				setTimeout( function () {
-					var $control = $( control );
-					new MultiImageControl( $control, data ).init();
-				}, 25 );
-			} );
-		} );
+		//var data = {};
+		//
+		//data.selectors = {};
+		//data.selectors.store = 'input[type="hidden"][name="store"]';
+		//data.selectors.upload_button = '.upload';
+		//data.selectors.remove_button = '.remove';
+		//data.selectors.thumbnails = 'ul.thumbnails';
+		//data.selectors.thumbnail = 'li.thumbnail';
+		//
+		//// bootstrap all the multi image controls
+		//var events = wp.customize.Events;
+		//events.bind( 'multi-image-control:rendered', function () {
+		//	$( '.customize-control-multi-image' ).each( function ( i, control ) {
+		//		setTimeout( function () {
+		//			var $control = $( control );
+		//			//new MultiImageControl( $control, data ).init();
+		//		}, 25 );
+		//	} );
+		//} );
 	} )
 })( jQuery, window, window._ );
