@@ -1,6 +1,8 @@
 (function ( $, window, _, undefined ) {
 	"use strict";
 
+	var api = window.wp.customize;
+
 	api.MultiImage = api.Control.extend( {
 		ready: function () {
 			console.log( 'Hello World!' );
