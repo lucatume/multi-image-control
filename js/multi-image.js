@@ -1,4 +1,4 @@
-(function ( $, window, _, undefined ) {
+(function ( $, window, _ ) {
 	"use strict";
 
 	var api = window.wp.customize;
@@ -24,7 +24,7 @@
 			} );
 
 			// get the selected attachments when user selects
-			file_frame.on( 'select', function ( evt ) {
+			file_frame.on( 'select', function () {
 				var selected = file_frame.state().get( 'selection' ).toJSON(),
 					urls = [];
 				_.each( selected, function ( attachment ) {
@@ -44,7 +44,6 @@
 			this.$upload_button = this.container.find( '.upload' );
 			this.$remove_button = this.container.find( '.remove' );
 			this.$thumbnails = this.container.find( 'ul.thumbnails' );
-			this.$thumbnail = this.container.find( 'li.thumbnail' );
 
 			var self = this;
 			api.Events.bind( 'multi-image-control:urls-available', function ( urls ) {
@@ -52,7 +51,7 @@
 				self.update_thumbnails( urls );
 			} );
 
-			this.$upload_button.on( 'click', function ( evt ) {
+			this.$upload_button.on( 'click', function () {
 				ImageFileFrame.open();
 			} );
 
@@ -62,43 +61,7 @@
 			} );
 
 			// make the images sortable
-			this.$thumbnails.sortable( {
-				items: '> li',
-				axis: 'y',
-				opacity: 0.6,
-				distance: 3,
-				cursor: 'move',
-				delay: 150,
-				tolerance: 'pointer',
-				update: function () {
-					var thumbnails = $( this ).find( data.selectors.thumbnail ),
-						urls = [];
-					_.each( thumbnails, function ( thumbnail ) {
-						var $thumbnail = $( thumbnail );
-						urls.push( $thumbnail.data( 'src' ) );
-						$thumbnail.removeClass( 'no-list' );
-					} );
-					api.Events.trigger( 'multi-image-control:urls-available', urls );
-				},
-				start: function () {
-					var thumbnails = $( this ).find( data.selectors.thumbnail );
-					_.each( thumbnails, function ( th ) {
-						$( th ).addClass( 'no-list' ).removeClass( 'selected' );
-					} );
-				}
-			} ).disableSelection();
-
-			// make the list items clickable
-			this.$thumbnails.on( 'click', function () {
-				var $li = $( this );
-				$li.toggleClass( 'selected' );
-				// append or remove the icons from the item
-				if ( $li.hasClass( 'selected' ) ) {
-					//new RemoveAction( $li );
-				} else {
-					$li.empty();
-				}
-			} );
+			this.$thumbnails.sortable().disableSelection();
 		},
 
 		update_urls: function ( urls ) {
