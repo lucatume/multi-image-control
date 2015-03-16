@@ -44,6 +44,7 @@
 			this.$upload_button = this.container.find( '.upload' );
 			this.$remove_button = this.container.find( '.remove' );
 			this.$thumbnails = this.container.find( 'ul.thumbnails' );
+			this.thumbnail_selector = '.thumbnail';
 
 			var self = this;
 			api.Events.bind( 'multi-image-control:urls-available', function ( urls ) {
@@ -62,8 +63,16 @@
 
 			// make the images sortable
 			this.$thumbnails.sortable().disableSelection();
-		},
 
+			this.$thumbnails.on( 'sortupdate', function () {
+				var thumbnails = self.$thumbnails.find( self.thumbnail_selector ),
+					urls = [];
+				_.each( thumbnails, function ( el ) {
+					urls.push( $( el ).data( 'src' ) );
+				} );
+				self.update_urls( urls );
+			} );
+		},
 		update_urls: function ( urls ) {
 			this.$store.val( urls );
 			wp.customize.trigger( 'change' );
