@@ -46,6 +46,11 @@
 			this.$thumbnails = this.container.find( 'ul.thumbnails' );
 			this.thumbnail_selector = '.thumbnail';
 
+			var urls = this.setting.get();
+			if ( urls !== '' ) {
+				this.update_thumbnails( urls.split( ',' ) );
+			}
+
 			var self = this;
 			api.Events.bind( 'multi-image-control:urls-available', function ( urls ) {
 				self.update_urls( urls );
@@ -57,7 +62,7 @@
 			} );
 
 			this.$remove_button.on( 'click', function () {
-				self.clear_urls();
+				self.setting.set( '' );
 				self.clear_thumbnails();
 			} );
 
@@ -73,9 +78,9 @@
 				self.update_urls( urls );
 			} );
 		},
+
 		update_urls: function ( urls ) {
-			this.$store.val( urls );
-			wp.customize.trigger( 'change' );
+			this.setting.set( urls.join() );
 		},
 
 		get_thumbnail_for: function ( url ) {
@@ -93,11 +98,6 @@
 			_.each( urls, function ( url ) {
 				self.$thumbnails.append( self.get_thumbnail_for( url ) );
 			} );
-		},
-
-		clear_urls: function () {
-			this.$store.val( '' );
-			this.update_thumbnails( [] );
 		},
 
 		clear_thumbnails: function () {
