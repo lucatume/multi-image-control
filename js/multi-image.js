@@ -97,6 +97,10 @@
 			new MIC_Upload_Button( {id: 'mic-upload-button'} );
 			new MIC_Remove_Button( {model: this, id: 'mic-remove-button'} );
 
+			if ( this.setting.get() === '' ) {
+				return;
+			}
+
 			var srcs = new Srcs_Collection();
 			var urls = this.setting.get().split( ',' );
 			var thumbnails = new Thumbnails_View( {model: srcs, el: this.container.find( 'ul.thumbnails' )} )
