@@ -93,8 +93,8 @@
 
 	api.MultiImage = api.Control.extend( {
 		ready: function () {
-			new MIC_Upload_Button( {el: this.container.find( 'button.upload' )} );
-			new MIC_Remove_Button( {model: this, el: this.container.find( 'button.remove' )} );
+			new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
+			new MIC_Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
 
 			if ( this.setting.get() === '' ) {
 				return;
