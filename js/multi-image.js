@@ -67,20 +67,25 @@
 	} );
 
 	var Thumbnail_View = Backbone.View.extend( {
-		template: _.template( '<li class="thumbnail" style="background-image: url(<%= src %>)" data-src="<%= src %>"></li>' ),
-		render: function () {
-			this.$el.html( this.template( this.model.attributes ) );
-			return this;
-		}
+		tagName: 'li',
+		className: 'thumbnail'
 	} );
 
 	var Thumbnails_View = Backbone.View.extend( {
-		tagName: 'ul',
+		make_sortable: function () {
+			this.$el.sortable().disableSelection
+		},
 		render: function () {
 			var srcs = this.model.models;
 			_.each( srcs, function ( src ) {
-				var thumbnail = new Thumbnail_View( {model: src} );
-				this.$el.append( thumbnail.render().$el );
+				var _src = src.attributes.src;
+				var thumbnail = new Thumbnail_View( {
+					attributes: {
+						style: 'background-image: url(' + _src + ')',
+						'data-src': _src
+					}
+				} );
+				this.$el.append( thumbnail.$el );
 			}, this );
 
 			return this;
@@ -94,21 +99,15 @@
 
 			var srcs = new Srcs_Collection();
 			var urls = this.setting.get().split( ',' );
-			var thumbnails = new Thumbnails_View( {model: srcs, id: 'mic-thumbnails'} )
+			var thumbnails = new Thumbnails_View( {model: srcs, el: this.container.find( 'ul.thumbnails' )} )
 			_.each( urls, function ( url ) {
 				srcs.add( new Src( {collection: srcs, src: url} ) );
 			} );
 
-			var $thumbnails = this.container.find( 'ul.thumbnails' );
-			$thumbnails.html( thumbnails.render().$el );
-			$thumbnails.sortable().disableSelection();
+			thumbnails.render().make_sortable();
 		}
 	} );
 
-
 	$.extend( api.controlConstructor, {multi_image: api.MultiImage} );
 
-	$( document ).ready( function () {
-
-	} )
 })( jQuery, window, window._ );
