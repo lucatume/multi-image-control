@@ -54,7 +54,6 @@
 
 		},
 		render: function () {
-			var args = arguments;
 			var html = this.get_new_html();
 			this.$el.html( html );
 		}
@@ -73,7 +72,7 @@
 
 	var Thumbnails_View = Backbone.View.extend( {
 		make_sortable: function () {
-			this.$el.sortable().disableSelection
+			this.$el.sortable().disableSelection();
 		},
 		render: function () {
 			var srcs = this.model.models;
@@ -94,8 +93,8 @@
 
 	api.MultiImage = api.Control.extend( {
 		ready: function () {
-			new MIC_Upload_Button( {id: 'mic-upload-button'} );
-			new MIC_Remove_Button( {model: this, id: 'mic-remove-button'} );
+			new MIC_Upload_Button( {el: this.container.find( 'button.upload' )} );
+			new MIC_Remove_Button( {model: this, el: this.container.find( 'button.remove' )} );
 
 			if ( this.setting.get() === '' ) {
 				return;
@@ -103,7 +102,7 @@
 
 			var srcs = new Srcs_Collection();
 			var urls = this.setting.get().split( ',' );
-			var thumbnails = new Thumbnails_View( {model: srcs, el: this.container.find( 'ul.thumbnails' )} )
+			var thumbnails = new Thumbnails_View( {model: srcs, el: this.container.find( 'ul.thumbnails' )} );
 			_.each( urls, function ( url ) {
 				srcs.add( new Src( {collection: srcs, src: url} ) );
 			} );
