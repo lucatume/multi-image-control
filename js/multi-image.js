@@ -38,76 +38,73 @@
 		}
 	};
 
-	api.MultiImage = api.Control.extend( {
-		ready: function () {
-			this.$store = this.container.find( 'input[type="hidden"][name="store"]' );
-			this.$upload_button = this.container.find( '.upload' );
-			this.$remove_button = this.container.find( '.remove' );
-			this.$thumbnails = this.container.find( 'ul.thumbnails' );
-			this.thumbnail_selector = '.thumbnail';
-
-			var urls = this.setting.get();
-			if ( urls !== '' ) {
-				this.update_thumbnails( urls.split( ',' ) );
-			}
-
-			var self = this;
-			api.Events.bind( 'multi-image-control:urls-available', function ( urls ) {
-				self.update_urls( urls );
-				self.update_thumbnails( urls );
-			} );
-
-			this.$upload_button.on( 'click', function () {
-				ImageFileFrame.open();
-			} );
-
-			this.$remove_button.on( 'click', function () {
-				self.setting.set( '' );
-				self.clear_thumbnails();
-			} );
-
-			// make the images sortable
-			this.$thumbnails.sortable().disableSelection();
-
-			this.$thumbnails.on( 'sortupdate', function () {
-				var thumbnails = self.$thumbnails.find( self.thumbnail_selector ),
-					urls = [];
-				_.each( thumbnails, function ( el ) {
-					urls.push( $( el ).data( 'src' ) );
-				} );
-				self.update_urls( urls );
-			} );
-		},
-
-		update_urls: function ( urls ) {
-			this.setting.set( urls.join() );
-		},
-
-		get_thumbnail_for: function ( url ) {
-			var th = $( '<li/>' );
-			th.attr( 'style', 'background-image:url(' + url + ');' );
-			th.attr( 'class', 'thumbnail' );
-			th.attr( 'data-src', url );
-
-			return th;
-		},
-
-		update_thumbnails: function ( urls ) {
-			this.$thumbnails.empty();
-			var self = this;
-			_.each( urls, function ( url ) {
-				self.$thumbnails.append( self.get_thumbnail_for( url ) );
-			} );
-		},
-
-		clear_thumbnails: function () {
-			this.$thumbnails.empty();
-		},
-
-		get_stored_urls: function () {
-			return this.$store.val();
+	var MIC_Upload_Button = Backbone.View.extend( {
+		tagName: 'a',
+		initialize: function () {
+			this.$el.on( 'click', ImageFileFrame.open );
 		}
 	} );
+
+	var MIC_Remove_Button = Backbone.View.extend( {
+		tagName: 'a',
+		initialize: function () {
+			//this.listenTo( this.model, 'change', this.render );
+		},
+		get_new_html: function () {
+
+		},
+		render: function () {
+			var args = arguments;
+			var html = this.get_new_html();
+			this.$el.html( html );
+		}
+	} );
+
+	var Src = Backbone.Model.extend( {} );
+
+	var Srcs_Collection = Backbone.Collection.extend( {
+		model: Src
+	} );
+
+	var Thumbnail_View = Backbone.View.extend( {
+		template: _.template( '<li class="thumbnail" style="background-image: url(<%= src %>)" data-src="<%= src %>"></li>' ),
+		render: function () {
+			this.$el.html( this.template( this.model.attributes ) );
+			return this;
+		}
+	} );
+
+	var Thumbnails_View = Backbone.View.extend( {
+		tagName: 'ul',
+		render: function () {
+			var srcs = this.model.models;
+			_.each( srcs, function ( src ) {
+				var thumbnail = new Thumbnail_View( {model: src} );
+				this.$el.append( thumbnail.render().$el );
+			}, this );
+
+			return this;
+		}
+	} );
+
+	api.MultiImage = api.Control.extend( {
+		ready: function () {
+			new MIC_Upload_Button( {id: 'mic-upload-button'} );
+			new MIC_Remove_Button( {model: this, id: 'mic-remove-button'} );
+
+			var srcs = new Srcs_Collection();
+			var urls = this.setting.get().split( ',' );
+			var thumbnails = new Thumbnails_View( {model: srcs, id: 'mic-thumbnails'} )
+			_.each( urls, function ( url ) {
+				srcs.add( new Src( {collection: srcs, src: url} ) );
+			} );
+
+			var $thumbnails = this.container.find( 'ul.thumbnails' );
+			$thumbnails.html( thumbnails.render().$el );
+			$thumbnails.sortable().disableSelection();
+		}
+	} );
+
 
 	$.extend( api.controlConstructor, {multi_image: api.MultiImage} );
 
