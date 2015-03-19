@@ -15,8 +15,6 @@
 
 			// create the file frame
 			file_frame = wp.media.frames.file_frame = wp.media( {
-				//title: $( this ).data( 'uploader_title' ),
-				//button: $( this ).data( 'uploader_button_text' ),
 				multiple: true,
 				library: {
 					type: 'image'
@@ -75,6 +73,7 @@
 			this.$el.sortable().disableSelection();
 		},
 		render: function () {
+			this.$el.empty();
 			var srcs = this.model.models;
 			_.each( srcs, function ( src ) {
 				var _src = src.attributes.src;
@@ -92,22 +91,33 @@
 	} );
 
 	api.MultiImage = api.Control.extend( {
-		ready: function () {
-			new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
-			new MIC_Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
+		update: function ( urls ) {
+			if ( urls.length === 0 ) {
+				return;
+			}
+			var new_srcs = [];
+			_.each( urls, function ( url ) {
+				new_srcs.push( new Src( {collection: this.srcs, src: url} ) );
+			}, this );
+			this.srcs.reset();
+			this.srcs.reset( new_srcs );
 
+			this.thumbnails.render().make_sortable();
+		},
+		ready: function () {
+			this.upload_button = new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
+			this.remove_button = new MIC_Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
+			this.srcs = new Srcs_Collection();
+			this.thumbnails = new Thumbnails_View( {model: this.srcs, el: this.container.find( 'ul.thumbnails' )} );
+
+			api.Events.bind( 'multi-image-control:urls-available', _.bind( this.update, this ) );
+
+			// render the initial state
 			if ( this.setting.get() === '' ) {
 				return;
 			}
-
-			var srcs = new Srcs_Collection();
 			var urls = this.setting.get().split( ',' );
-			var thumbnails = new Thumbnails_View( {model: srcs, el: this.container.find( 'ul.thumbnails' )} );
-			_.each( urls, function ( url ) {
-				srcs.add( new Src( {collection: srcs, src: url} ) );
-			} );
-
-			thumbnails.render().make_sortable();
+			this.update( urls );
 		}
 	} );
 
