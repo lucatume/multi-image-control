@@ -2,15 +2,14 @@
     <span class="customize-control-title">{{data.label}}</span>
 </label>
 <div>
-    <input type="hidden" name="store" value="{{data.value}}" {{data.link}} />
-    <a href="#" class="button-secondary upload">
+    <a href="#" class="button-secondary upload" id="mic-upload-button">
         {{data.l10n.upload_button_label}}
     </a>
-    <a href="#" class="button-secondary remove">
+    <a href="#" class="button-secondary remove" id="mic-remove-button">
         {{data.l10n.remove_all_button_label}}
     </a>
 </div>
-<div class="customize-control-content">
-    <ul class="thumbnails">
+<div>
+    <ul class="thumbnails" id="mic-thumbnails">
     </ul>
 </div>
