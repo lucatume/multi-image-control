@@ -99,7 +99,6 @@
 			_.each( urls, function ( url ) {
 				new_srcs.push( new Src( {collection: this.srcs, src: url} ) );
 			}, this );
-			this.srcs.reset();
 			this.srcs.reset( new_srcs );
 
 			this.thumbnails.render().make_sortable();
