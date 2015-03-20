@@ -36,14 +36,14 @@
 		}
 	};
 
-	var MIC_Upload_Button = Backbone.View.extend( {
+	var Upload_Button = Backbone.View.extend( {
 		tagName: 'a',
 		initialize: function () {
 			this.$el.on( 'click', ImageFileFrame.open );
 		}
 	} );
 
-	var MIC_Remove_Button = Backbone.View.extend( {
+	var Remove_Button = Backbone.View.extend( {
 		tagName: 'a',
 		empty_urls: function () {
 			api.Events.trigger( 'mic:urls-available', [] );
@@ -72,6 +72,17 @@
 		className: 'thumbnail'
 	} );
 
+	var Placeholder = Backbone.View.extend( {
+		tagName: 'li',
+		className: 'placeholder',
+		template: _.template( '<span class="message"><%= no_images_selected %></span>' ),
+		render: function () {
+			var data = {'no_images_selected': 'No images selected'};
+			this.$el.html( this.template( data ) );
+			return this;
+		}
+	} );
+
 	var Thumbnails_View = Backbone.View.extend( {
 		initialize: function () {
 			this.model.on( 'change reset set', this.render, this );
@@ -96,17 +107,22 @@
 		render: function () {
 			this.$el.empty();
 			var srcs = this.model.models;
-			_.each( srcs, function ( src ) {
-				var _src = src.attributes.src;
-				var thumbnail = new Thumbnail_View( {
-					attributes: {
-						style: 'background-image: url(' + _src + ')',
-						'data-src': _src
-					}
-				} );
-				this.$el.append( thumbnail.$el );
-			}, this );
-			this.make_sortable();
+			if ( srcs.length === 0 ) {
+				this.$el.append( new Placeholder().render().$el );
+				return;
+			} else {
+				_.each( srcs, function ( src ) {
+					var _src = src.attributes.src;
+					var thumbnail = new Thumbnail_View( {
+						attributes: {
+							style: 'background-image: url(' + _src + ')',
+							'data-src': _src
+						}
+					} );
+					this.$el.append( thumbnail.$el );
+				}, this );
+				this.make_sortable();
+			}
 			return this;
 		}
 	} );
@@ -133,8 +149,8 @@
 			var urls = this.setting.get().length ? this.setting.get().split( ',' ) : [];
 			return urls;
 		}, ready: function () {
-			this.upload_button = new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
-			this.remove_button = new MIC_Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
+			this.upload_button = new Upload_Button( {el: this.container.find( 'a.upload' )} );
+			this.remove_button = new Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
 
 			this.srcs = new Srcs_Collection();
 			this.thumbnails = new Thumbnails_View( {model: this.srcs, el: this.container.find( 'ul.thumbnails' )} );
