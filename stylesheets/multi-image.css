@@ -1,0 +1,70 @@
+/* line 8, ../sass/multi-image.scss */
+.customize-control-multi_image .thumbnails .thumbnail:focus, .customize-control-multi_image .thumbnails .thumbnail:hover {
+  -moz-box-shadow: 0 0 5px #3498db;
+  -webkit-box-shadow: 0 0 5px #3498db;
+  box-shadow: 0 0 5px #3498db;
+  margin: 5px 1px 3px 0;
+  border: 1px solid #3498db;
+}
+
+/* line 16, ../sass/multi-image.scss */
+.customize-control-multi_image .thumbnails .thumbnail {
+  width: 100%;
+  height: 90px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background: no-repeat center;
+  background-size: cover;
+  outline: none;
+  margin: 5px 1px 3px 0;
+  border: 1px solid #ddd;
+}
+/* line 33, ../sass/multi-image.scss */
+.customize-control-multi_image .thumbnails .placeholder {
+  width: 100%;
+  height: 90px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 5px 1px 3px 0;
+  border: 1px solid #eee;
+}
+/* line 40, ../sass/multi-image.scss */
+.customize-control-multi_image .thumbnails .placeholder .message {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  display: block;
+}
+/* line 49, ../sass/multi-image.scss */
+.customize-control-multi_image .customize-control-content {
+  margin-top: 1rem;
+}
+/* line 52, ../sass/multi-image.scss */
+.customize-control-multi_image .multi_images-remove {
+  float: right;
+}
+/* line 55, ../sass/multi-image.scss */
+.customize-control-multi_image .actions {
+  margin-top: 1rem;
+  display: flex;
+  align-content: space-between;
+}
+/* line 59, ../sass/multi-image.scss */
+.customize-control-multi_image .actions a[class^="button-"] {
+  width: 48%;
+  margin: 0 auto;
+  display: inline-block;
+  text-align: center;
+}

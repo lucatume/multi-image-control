@@ -75,10 +75,9 @@
 	var Placeholder = Backbone.View.extend( {
 		tagName: 'li',
 		className: 'placeholder',
-		template: _.template( '<span class="message"><%= no_images_selected %></span>' ),
+		template: _.template( '<span class="message"><%= no_images_selected_label %></span>' ),
 		render: function () {
-			var data = {'no_images_selected': 'No images selected'};
-			this.$el.html( this.template( data ) );
+			this.$el.html( this.template( _MultiImageControl.l10n ) );
 			return this;
 		}
 	} );

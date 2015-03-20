@@ -14,10 +14,12 @@ class tad_Multi_Image_Control extends WP_Customize_Control
     {
 	    wp_enqueue_script('multi-image-control-js');
         wp_enqueue_style('multi-image-control-css');
-        wp_localize_script('multi-image-control-js', '_MultiImageControl', array(
-            'remove_all_images_label' => __('Remove all images', 'mic') ,
-            'remove_one_image_label' => __('Remove the image', 'mic') ,
-            'remove_n_images_label' => __('Remove the images', 'mic')
+	    wp_localize_script( 'multi-image-control-js', '_MultiImageControl', array(
+		    'l10n' => array(
+			    'upload_button_label'      => __( 'Upload', 'mic' ),
+			    'remove_all_button_label'  => __( 'Remove all', 'mic' ),
+			    'no_images_selected_label' => __( 'No images selected', 'mic' )
+		    )
         ));
     }
     
@@ -26,6 +28,7 @@ class tad_Multi_Image_Control extends WP_Customize_Control
         parent::to_json();
         $this->json['l10n']['upload_button_label'] = __('Upload', 'mic');
         $this->json['l10n']['remove_all_button_label'] = __('Remove all', 'mic');
+	    $this->json['l10n']['no_images_selected_label'] = __( 'No images selected', 'mic' );
     }
 
     public function render_content()

@@ -1,0 +1,66 @@
+@import '../../../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-core-1.0.1/stylesheets/compass';
+
+//colors
+$color_alto : #ddd;
+$color_curious_blue : #3498db;
+$color_gallery : #eee;
+
+%blue_border {
+  @include box-shadow(0 0 5px $color_curious_blue);
+  margin : 5px 1px 3px 0;
+  border : 1px solid $color_curious_blue;
+}
+
+.customize-control-multi_image {
+  .thumbnails {
+    .thumbnail {
+      width           : 100%;
+      height          : 90px;
+      @include border-radius(3px);
+      @include box-sizing(border-box);
+      background      : no-repeat center;
+      background-size : cover;
+      outline         : none;
+      margin          : 5px 1px 3px 0;
+      border          : 1px solid $color_alto;
+      &:focus {
+        @extend %blue_border;
+      }
+      &:hover {
+        @extend %blue_border;
+      }
+    }
+    .placeholder {
+      width  : 100%;
+      height : 90px;
+      @include border-radius(3px);
+      @include box-sizing(border-box);
+      margin : 5px 1px 3px 0;
+      border : 1px solid $color_gallery;
+      .message {
+        text-align : center;
+        position   : relative;
+        top        : 50%;
+        @include translateY(-50%);
+        display    : block;
+      }
+    }
+  }
+  .customize-control-content {
+    margin-top : 1rem;
+  }
+  .multi_images-remove {
+    float : right;
+  }
+  .actions {
+    margin-top    : 1rem;
+    display       : flex;
+    align-content : space-between;
+    a[class^="button-"] {
+      width      : 48%;
+      margin     : 0 auto;
+      display    : inline-block;
+      text-align : center;
+    }
+  }
+}

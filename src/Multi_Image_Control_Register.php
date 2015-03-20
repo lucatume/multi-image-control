@@ -10,7 +10,7 @@
 		public function register_scripts_and_styles() {
 			$postfix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 			$js_src = plugins_url( '/js/multi-image' . $postfix . '.js', dirname( __FILE__ ) );
-			$css_src = plugins_url( '/css/multi-image' . $postfix . '.css', dirname( __FILE__ ) );
+			$css_src = plugins_url( '/stylesheets/multi-image' . $postfix . '.css', dirname( __FILE__ ) );
 			wp_register_script( 'multi-image-control-js', $js_src, array(
 				'jquery',
 				'backbone',
