@@ -60,3 +60,16 @@
   margin-top: 1em; }
 .customize-control-multi_image .multi_images-remove {
   float: right; }
+
+.customize-control-multi_image .actions {
+	margin-bottom : 1rem;
+	display       : flex;
+	align-content : space-between;
+}
+
+.customize-control-multi_image .actions a[class^="button-"] {
+	width      : 48%;
+	margin     : 0 auto;
+	display    : inline-block;
+	text-align : center;
+}
