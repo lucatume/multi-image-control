@@ -28,7 +28,7 @@
 				_.each( selected, function ( attachment ) {
 					urls.push( attachment.url );
 				} );
-				api.Events.trigger( 'mic:urls-selected', urls );
+				api.Events.trigger( 'mic:urls-available', urls );
 			} );
 
 			// open the file frame
@@ -64,8 +64,22 @@
 		initialize: function () {
 			this.model.on( 'change reset set', this.render, this );
 		},
+		get_urls: function ( el ) {
+			var urls = [],
+				thumbnails = $( el ).find( 'li.thumbnail' );
+			_.each( thumbnails, function ( thumbnail ) {
+				urls.push( $( thumbnail ).data( 'src' ) );
+			} );
+
+			return urls;
+		},
 		make_sortable: function () {
-			this.$el.sortable().disableSelection();
+			var self = this;
+			this.$el.sortable( {
+				update: function () {
+					api.Events.trigger( 'mic:urls-available', self.get_urls( this ) );
+				}
+			} ).disableSelection();
 		},
 		render: function () {
 			this.$el.empty();
@@ -115,7 +129,7 @@
 			this.srcs = new Srcs_Collection();
 			this.thumbnails = new Thumbnails_View( {model: this.srcs, el: this.container.find( 'ul.thumbnails' )} );
 
-			api.Events.bind( 'mic:urls-selected', _.bind( this.update, this ) );
+			api.Events.bind( 'mic:urls-available', _.bind( this.update, this ) );
 
 			this.update( this.extract_setting_urls() );
 		}
