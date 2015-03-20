@@ -48,8 +48,16 @@
 		empty_urls: function () {
 			api.Events.trigger( 'mic:urls-available', [] );
 		},
+		handle_visibility: function ( urls ) {
+			if ( urls.length ) {
+				this.$el.show();
+				return;
+			}
+			this.$el.hide();
+		},
 		initialize: function () {
 			this.$el.on( 'click', this.empty_urls );
+			api.Events.bind( 'mic:urls-available', _.bind( this.handle_visibility, this ) );
 		}
 	} );
 
@@ -132,8 +140,7 @@
 			this.thumbnails = new Thumbnails_View( {model: this.srcs, el: this.container.find( 'ul.thumbnails' )} );
 
 			api.Events.bind( 'mic:urls-available', _.bind( this.update, this ) );
-
-			this.update( this.extract_setting_urls() );
+			api.Events.trigger( 'mic:urls-available', this.extract_setting_urls() );
 		}
 	} );
 
