@@ -86,9 +86,11 @@
 	} );
 
 	api.MultiImage = api.Control.extend( {
-		update_setting: function ( urls ) {
+		prepare_setting_urls: function ( urls ) {
 			urls = urls.length ? urls.join( ',' ) : '';
-			this.setting.set( urls )
+			return urls;
+		}, update_setting: function ( urls ) {
+			this.setting.set( this.prepare_setting_urls( urls ) );
 		},
 		udpdate_srcs_collection: function ( urls ) {
 			if ( urls.length === 0 ) {
@@ -104,7 +106,10 @@
 			this.update_setting( urls );
 			this.udpdate_srcs_collection( urls );
 		},
-		ready: function () {
+		extract_setting_urls: function () {
+			var urls = this.setting.get().length ? this.setting.get().split( ',' ) : [];
+			return urls;
+		}, ready: function () {
 			this.upload_button = new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
 			this.remove_button = new MIC_Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
 			this.srcs = new Srcs_Collection();
@@ -112,8 +117,7 @@
 
 			api.Events.bind( 'mic:urls-selected', _.bind( this.update, this ) );
 
-			var urls = this.setting.get().length ? this.setting.get().split( ',' ) : [];
-			this.update( urls );
+			this.update( this.extract_setting_urls() );
 		}
 	} );
 
