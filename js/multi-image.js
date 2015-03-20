@@ -45,7 +45,11 @@
 
 	var MIC_Remove_Button = Backbone.View.extend( {
 		tagName: 'a',
+		empty_urls: function () {
+			api.Events.trigger( 'mic:urls-available', [] );
+		},
 		initialize: function () {
+			this.$el.on( 'click', this.empty_urls );
 		}
 	} );
 
@@ -107,9 +111,6 @@
 			this.setting.set( this.prepare_setting_urls( urls ) );
 		},
 		udpdate_srcs_collection: function ( urls ) {
-			if ( urls.length === 0 ) {
-				return;
-			}
 			var new_srcs = [];
 			_.each( urls, function ( url ) {
 				new_srcs.push( new Src( {collection: this.srcs, src: url} ) );
@@ -126,6 +127,7 @@
 		}, ready: function () {
 			this.upload_button = new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
 			this.remove_button = new MIC_Remove_Button( {model: this, el: this.container.find( 'a.remove' )} );
+
 			this.srcs = new Srcs_Collection();
 			this.thumbnails = new Thumbnails_View( {model: this.srcs, el: this.container.find( 'ul.thumbnails' )} );
 
