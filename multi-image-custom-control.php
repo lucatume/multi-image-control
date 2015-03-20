@@ -20,20 +20,4 @@
 	// register the control type
 	add_action('customize_register', array($register, 'register_control_type'));
 
-	// test
 	add_action( 'customize_register', 'test_cust' );
-	function test_cust( WP_Customize_Manager $wp_customize ) {
-		$wp_customize->add_setting( 'custom_control_setting', array(
-			'default' => '',
-			'transport' => 'refresh',
-		) );
-		$wp_customize->add_section( 'control-test', array(
-			'title' => __( 'Custom control test', 'default' ),
-			'priority' => 30
-		) );
-		$wp_customize->add_control( new tad_Multi_Image_Control( $wp_customize, 'test_cust_control', array(
-			'label' => __( 'Choose images!', 'default' ),
-			'section' => 'control-test',
-			'settings' => 'custom_control_setting'
-		) ) );
-	}
