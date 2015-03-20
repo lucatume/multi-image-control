@@ -28,7 +28,7 @@
 				_.each( selected, function ( attachment ) {
 					urls.push( attachment.url );
 				} );
-				api.Events.trigger( 'multi-image-control:urls-available', urls );
+				api.Events.trigger( 'mic:urls-selected', urls );
 			} );
 
 			// open the file frame
@@ -46,14 +46,6 @@
 	var MIC_Remove_Button = Backbone.View.extend( {
 		tagName: 'a',
 		initialize: function () {
-			//this.listenTo( this.model, 'change', this.render );
-		},
-		get_new_html: function () {
-
-		},
-		render: function () {
-			var html = this.get_new_html();
-			this.$el.html( html );
 		}
 	} );
 
@@ -69,6 +61,9 @@
 	} );
 
 	var Thumbnails_View = Backbone.View.extend( {
+		initialize: function () {
+			this.model.on( 'change reset set', this.render, this );
+		},
 		make_sortable: function () {
 			this.$el.sortable().disableSelection();
 		},
@@ -85,13 +80,17 @@
 				} );
 				this.$el.append( thumbnail.$el );
 			}, this );
-
+			this.make_sortable();
 			return this;
 		}
 	} );
 
 	api.MultiImage = api.Control.extend( {
-		update: function ( urls ) {
+		update_setting: function ( urls ) {
+			urls = urls.length ? urls.join( ',' ) : '';
+			this.setting.set( urls )
+		},
+		udpdate_srcs_collection: function ( urls ) {
 			if ( urls.length === 0 ) {
 				return;
 			}
@@ -100,8 +99,10 @@
 				new_srcs.push( new Src( {collection: this.srcs, src: url} ) );
 			}, this );
 			this.srcs.reset( new_srcs );
-
-			this.thumbnails.render().make_sortable();
+		},
+		update: function ( urls ) {
+			this.update_setting( urls );
+			this.udpdate_srcs_collection( urls );
 		},
 		ready: function () {
 			this.upload_button = new MIC_Upload_Button( {el: this.container.find( 'a.upload' )} );
@@ -109,13 +110,9 @@
 			this.srcs = new Srcs_Collection();
 			this.thumbnails = new Thumbnails_View( {model: this.srcs, el: this.container.find( 'ul.thumbnails' )} );
 
-			api.Events.bind( 'multi-image-control:urls-available', _.bind( this.update, this ) );
+			api.Events.bind( 'mic:urls-selected', _.bind( this.update, this ) );
 
-			// render the initial state
-			if ( this.setting.get() === '' ) {
-				return;
-			}
-			var urls = this.setting.get().split( ',' );
+			var urls = this.setting.get().length ? this.setting.get().split( ',' ) : [];
 			this.update( urls );
 		}
 	} );
