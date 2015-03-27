@@ -19,5 +19,3 @@
 	add_action( 'admin_enqueue_scripts', array( $register, 'register_scripts_and_styles' ) );
 	// register the control type
 	add_action('customize_register', array($register, 'register_control_type'));
-
-	add_action( 'customize_register', 'test_cust' );
